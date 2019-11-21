@@ -1,4 +1,4 @@
-package clockface
+package svg_clock
 
 type Point struct {
 	X float64
