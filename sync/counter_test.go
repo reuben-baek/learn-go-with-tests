@@ -5,21 +5,6 @@ import (
 	"testing"
 )
 
-type Counter struct {
-	mutex sync.Mutex
-	value int
-}
-
-func (c *Counter) Inc() {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	c.value++
-}
-
-func (c *Counter) Value() int {
-	return c.value
-}
-
 func TestCounter(t *testing.T) {
 	t.Run("incrementing the counter 3 times leaves it at 3", func(t *testing.T) {
 		counter := Counter{}
