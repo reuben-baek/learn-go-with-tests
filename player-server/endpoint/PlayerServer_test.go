@@ -1,10 +1,10 @@
-package server
+package endpoint
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/reuben-baek/learn-go-with-tests/application/domain"
-	"github.com/reuben-baek/learn-go-with-tests/application/infrastructure/InMemoryPlayerStore"
+	"github.com/reuben-baek/learn-go-with-tests/player-server/domain"
+	"github.com/reuben-baek/learn-go-with-tests/player-server/infrastructure"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -80,7 +80,7 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := InMemoryPlayerStore.New()
+	store := infrastructure.NewInMemoryPlayerStore()
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -187,23 +187,4 @@ func assertResponseBody(t *testing.T, got string, want string) {
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
-}
-
-type StubPlayerStore struct {
-	scores   map[string]int
-	winCalls []string
-	league   []domain.Player
-}
-
-func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	score := s.scores[name]
-	return score
-}
-
-func (s *StubPlayerStore) RecordWin(name string) {
-	s.winCalls = append(s.winCalls, name)
-}
-
-func (s *StubPlayerStore) GetLeague() []domain.Player {
-	return s.league
 }

@@ -1,9 +1,9 @@
-package server
+package endpoint
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/reuben-baek/learn-go-with-tests/application/domain"
+	"github.com/reuben-baek/learn-go-with-tests/player-server/domain"
 	"net/http"
 	"strings"
 )

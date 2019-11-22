@@ -1,6 +1,6 @@
-package InMemoryPlayerStore
+package infrastructure
 
-import "github.com/reuben-baek/learn-go-with-tests/application/domain"
+import "github.com/reuben-baek/learn-go-with-tests/player-server/domain"
 
 type InMemoryPlayerStore struct {
 	scores map[string]int
@@ -22,7 +22,7 @@ func (i *InMemoryPlayerStore) GetLeague() []domain.Player {
 	return league
 }
 
-func New() *InMemoryPlayerStore {
+func NewInMemoryPlayerStore() *InMemoryPlayerStore {
 	return &InMemoryPlayerStore{
 		map[string]int{},
 	}
