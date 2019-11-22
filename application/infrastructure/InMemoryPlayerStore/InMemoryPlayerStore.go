@@ -1,4 +1,4 @@
-package infrastructure
+package InMemoryPlayerStore
 
 type InMemoryPlayerStore struct {
 	scores map[string]int
@@ -12,6 +12,6 @@ func (i *InMemoryPlayerStore) RecordWin(name string) {
 	i.scores[name]++
 }
 
-func NewInMemoryPlayerScore() *InMemoryPlayerStore {
+func New() *InMemoryPlayerStore {
 	return &InMemoryPlayerStore{map[string]int{}}
 }

@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	"github.com/reuben-baek/learn-go-with-tests/application/infrastructure"
+	"github.com/reuben-baek/learn-go-with-tests/application/infrastructure/InMemoryPlayerStore"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -74,7 +74,7 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := infrastructure.NewInMemoryPlayerScore()
+	store := InMemoryPlayerStore.New()
 	server := PlayerServer{store}
 	player := "Pepper"
 

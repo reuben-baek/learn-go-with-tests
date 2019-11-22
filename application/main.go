@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/reuben-baek/learn-go-with-tests/application/infrastructure"
+	"github.com/reuben-baek/learn-go-with-tests/application/infrastructure/InMemoryPlayerStore"
 	"github.com/reuben-baek/learn-go-with-tests/application/server"
 	"log"
 	"net/http"
 )
 
-var inMemoryPlayerStore = infrastructure.NewInMemoryPlayerScore()
+var inMemoryPlayerStore = InMemoryPlayerStore.New()
 
 func main() {
 	server := &server.PlayerServer{Store: inMemoryPlayerStore}
