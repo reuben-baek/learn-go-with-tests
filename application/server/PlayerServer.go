@@ -2,12 +2,13 @@ package server
 
 import (
 	"fmt"
+	"github.com/reuben-baek/learn-go-with-tests/application/domain"
 	"net/http"
 	"strings"
 )
 
 type PlayerServer struct {
-	Store PlayerStore
+	Store domain.PlayerStore
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {

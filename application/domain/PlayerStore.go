@@ -1,4 +1,4 @@
-package server
+package domain
 
 type PlayerStore interface {
 	GetPlayerScore(name string) int
