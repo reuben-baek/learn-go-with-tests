@@ -5,7 +5,7 @@ import "github.com/reuben-baek/learn-go-with-tests/player-server/domain"
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   []domain.Player
+	league   domain.League
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -17,6 +17,6 @@ func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
 }
 
-func (s *StubPlayerStore) GetLeague() []domain.Player {
+func (s *StubPlayerStore) GetLeague() domain.League {
 	return s.league
 }
