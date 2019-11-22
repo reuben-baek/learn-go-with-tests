@@ -1,10 +1,14 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/reuben-baek/learn-go-with-tests/application/domain"
 	"github.com/reuben-baek/learn-go-with-tests/application/infrastructure/InMemoryPlayerStore"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 )
 
@@ -15,8 +19,9 @@ func TestGETPlayers(t *testing.T) {
 			"Floyd":  10,
 		},
 		nil,
+		nil,
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("returns Pepper's score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -52,8 +57,9 @@ func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{},
 		nil,
+		nil,
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("it records wins on POST", func(t *testing.T) {
 		const player = "Pepper"
@@ -75,18 +81,88 @@ func TestStoreWins(t *testing.T) {
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	store := InMemoryPlayerStore.New()
-	server := PlayerServer{store}
+	server := NewPlayerServer(store)
 	player := "Pepper"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
 
-	response := httptest.NewRecorder()
-	server.ServeHTTP(response, newGetScoreRequest(player))
-	assertStatus(t, response.Code, http.StatusOK)
+	t.Run("get score", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, newGetScoreRequest(player))
+		assertStatus(t, response.Code, http.StatusOK)
 
-	assertResponseBody(t, response.Body.String(), "3")
+		assertResponseBody(t, response.Body.String(), "3")
+	})
+
+	t.Run("get league", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, newLeagueRequest())
+		assertStatus(t, response.Code, http.StatusOK)
+
+		got := getLeagueFromResponse(t, response.Body)
+		want := []domain.Player{
+			{"Pepper", 3},
+		}
+		assertLeague(t, got, want)
+	})
+}
+
+func TestLeague(t *testing.T) {
+
+	t.Run("it returns 200 on /league", func(t *testing.T) {
+		wantedLeague := []domain.Player{
+			{"Cleo", 32},
+			{"Chris", 20},
+			{"Tiest", 14},
+		}
+
+		store := StubPlayerStore{nil, nil, wantedLeague}
+		server := NewPlayerServer(&store)
+
+		request := newLeagueRequest()
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		got := getLeagueFromResponse(t, response.Body)
+
+		assertStatus(t, response.Code, http.StatusOK)
+		assertLeague(t, got, wantedLeague)
+
+		assertContentType(t, response, jsonContentType)
+	})
+}
+
+func assertLeague(t *testing.T, got []domain.Player, wantedLeague []domain.Player) {
+	if !reflect.DeepEqual(got, wantedLeague) {
+		t.Errorf("got %v want %v", got, wantedLeague)
+	}
+}
+
+const jsonContentType = "application/json"
+
+func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want string) {
+	t.Helper()
+	if response.Result().Header.Get("content-type") != want {
+		t.Errorf("response did not have content-type of %s, got %v", want, response.Result().Header)
+	}
+}
+
+func getLeagueFromResponse(t *testing.T, reader io.Reader) []domain.Player {
+	t.Helper()
+	var got []domain.Player
+	err := json.NewDecoder(reader).Decode(&got)
+	if err != nil {
+		t.Fatalf("Unable to parse response from server %q into slice of Player, '%v'", reader, err)
+	}
+	return got
+}
+
+func newLeagueRequest() *http.Request {
+	request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+	return request
 }
 
 func assertStatus(t *testing.T, got int, want int) {
@@ -116,6 +192,7 @@ func assertResponseBody(t *testing.T, got string, want string) {
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
+	league   []domain.Player
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -125,4 +202,8 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 
 func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
+}
+
+func (s *StubPlayerStore) GetLeague() []domain.Player {
+	return s.league
 }

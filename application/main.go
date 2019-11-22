@@ -10,7 +10,7 @@ import (
 var inMemoryPlayerStore = InMemoryPlayerStore.New()
 
 func main() {
-	server := &server.PlayerServer{Store: inMemoryPlayerStore}
+	server := server.NewPlayerServer(inMemoryPlayerStore)
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("cound not listen on port 5000 %v", err)
 	}
