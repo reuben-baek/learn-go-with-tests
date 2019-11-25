@@ -1,7 +1,7 @@
 package infrastructure
 
 import (
-	"github.com/reuben-baek/learn-go-with-tests/player-server/domain"
+	"github.com/reuben-baek/learn-go-with-tests/poker/domain"
 	"reflect"
 	"testing"
 )

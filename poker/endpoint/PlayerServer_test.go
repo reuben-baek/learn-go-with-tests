@@ -3,8 +3,8 @@ package endpoint
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/reuben-baek/learn-go-with-tests/player-server/domain"
-	"github.com/reuben-baek/learn-go-with-tests/player-server/infrastructure"
+	"github.com/reuben-baek/learn-go-with-tests/poker/domain"
+	"github.com/reuben-baek/learn-go-with-tests/poker/infrastructure"
 	"io"
 	"net/http"
 	"net/http/httptest"

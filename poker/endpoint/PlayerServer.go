@@ -3,7 +3,7 @@ package endpoint
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/reuben-baek/learn-go-with-tests/player-server/domain"
+	"github.com/reuben-baek/learn-go-with-tests/poker/domain"
 	"net/http"
 	"strings"
 )

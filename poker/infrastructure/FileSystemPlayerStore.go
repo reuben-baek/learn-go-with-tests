@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/reuben-baek/learn-go-with-tests/player-server/domain"
+	"github.com/reuben-baek/learn-go-with-tests/poker/domain"
 	"io"
 	"os"
 	"sort"
@@ -29,6 +29,26 @@ func NewFileSystemPlayerStore(file *os.File) (domain.PlayerStore, error) {
 		database: jsonEncoder,
 		league:   league,
 	}, nil
+}
+
+func FileSystemPlayerStoreFromFile(path string) (domain.PlayerStore, func(), error) {
+	db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("problem opening %s %v", path, err)
+	}
+
+	closeFunc := func() {
+		db.Close()
+	}
+
+	store, err := NewFileSystemPlayerStore(db)
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("problem creating file system player store, %v ", err)
+	}
+
+	return store, closeFunc, nil
 }
 
 func initialisePlayerDBFile(file *os.File) error {

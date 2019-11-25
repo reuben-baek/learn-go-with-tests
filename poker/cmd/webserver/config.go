@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/reuben-baek/learn-go-with-tests/player-server/domain"
-	"github.com/reuben-baek/learn-go-with-tests/player-server/endpoint"
-	"github.com/reuben-baek/learn-go-with-tests/player-server/infrastructure"
+	"github.com/reuben-baek/learn-go-with-tests/poker/domain"
+	"github.com/reuben-baek/learn-go-with-tests/poker/endpoint"
+	"github.com/reuben-baek/learn-go-with-tests/poker/infrastructure"
 	"log"
 	"os"
 )

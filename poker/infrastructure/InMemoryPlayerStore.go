@@ -1,6 +1,6 @@
 package infrastructure
 
-import "github.com/reuben-baek/learn-go-with-tests/player-server/domain"
+import "github.com/reuben-baek/learn-go-with-tests/poker/domain"
 
 type InMemoryPlayerStore struct {
 	scores map[string]int
