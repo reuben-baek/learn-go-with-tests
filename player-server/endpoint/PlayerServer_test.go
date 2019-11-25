@@ -82,7 +82,7 @@ func TestStoreWins(t *testing.T) {
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	database, cleanDatabase := infrastructure.CreateTempFile(t, "")
 	defer cleanDatabase()
-	store := infrastructure.NewFileSystemPlayerStore(database)
+	store, _ := infrastructure.NewFileSystemPlayerStore(database)
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
