@@ -7,39 +7,30 @@ import (
 	"io"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type CLI struct {
-	playStore domain.PlayerStore
-	in        *bufio.Scanner
-	out       io.Writer
-	alerter   BlindAlerter
+	in   *bufio.Scanner
+	out  io.Writer
+	game *Game
 }
 
 func NewCLI(playStore domain.PlayerStore, in io.Reader, out io.Writer, alerter BlindAlerter) *CLI {
-	return &CLI{playStore, bufio.NewScanner(in), out, alerter}
+	return &CLI{bufio.NewScanner(in), out, &Game{alerter, playStore}}
 }
 
 const PlayerPrompt = "Please enter the number of players: "
 
 func (cli *CLI) PlayPoker() {
 	fmt.Fprint(cli.out, PlayerPrompt)
-	numberOfPlayers, _ := strconv.Atoi(cli.readLine())
-	cli.scheduleBlindAlerts(numberOfPlayers)
-	userInput := cli.readLine()
-	cli.playStore.RecordWin(extractWinner(userInput))
-}
+	numberOfPlayersInput := cli.readLine()
+	numberOfPlayers, _ := strconv.Atoi(strings.Trim(numberOfPlayersInput, "\n"))
 
-func (cli *CLI) scheduleBlindAlerts(numberOfPlayers int) {
-	blindIncrement := time.Duration(5+numberOfPlayers) * time.Minute
+	cli.game.Start(numberOfPlayers)
 
-	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
-	blindTime := 0 * time.Second
-	for _, blind := range blinds {
-		cli.alerter.ScheduleAlertAt(blindTime, blind)
-		blindTime = blindTime + blindIncrement
-	}
+	winnerInput := cli.readLine()
+	winner := extractWinner(winnerInput)
+	cli.game.Finish(winner)
 }
 
 func (cli *CLI) readLine() string {
