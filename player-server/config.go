@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/reuben-baek/learn-go-with-tests/player-server/domain"
 	"github.com/reuben-baek/learn-go-with-tests/player-server/endpoint"
 	"github.com/reuben-baek/learn-go-with-tests/player-server/infrastructure"
 	"log"
@@ -17,5 +18,12 @@ var db = func() *os.File {
 	return db
 }()
 
-var fileSystemPlayerStore = infrastructure.NewFileSystemPlayerStore(db)
+var fileSystemPlayerStore = func() domain.PlayerStore {
+	store, err := infrastructure.NewFileSystemPlayerStore(db)
+	if err != nil {
+		log.Fatalf("problem creating file system player store, %v", err)
+	}
+	return store
+}()
+
 var playerServer = endpoint.NewPlayerServer(fileSystemPlayerStore)

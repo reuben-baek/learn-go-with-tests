@@ -5,11 +5,46 @@ import (
 	"fmt"
 	"github.com/reuben-baek/learn-go-with-tests/player-server/domain"
 	"io"
+	"os"
 )
 
 type FileSystemPlayerStore struct {
-	database io.ReadWriteSeeker
+	database *json.Encoder
 	league   domain.League
+}
+
+func NewFileSystemPlayerStore(file *os.File) (domain.PlayerStore, error) {
+	err := initialisePlayerDBFile(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem initialising player db file, %v", err)
+	}
+
+	league, err := NewLeague(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+	}
+	jsonEncoder := json.NewEncoder(&Tape{file})
+	return &FileSystemPlayerStore{
+		database: jsonEncoder,
+		league:   league,
+	}, nil
+}
+
+func initialisePlayerDBFile(file *os.File) error {
+	file.Seek(0, 0)
+
+	info, err := file.Stat()
+
+	if err != nil {
+		return fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
+	}
+
+	if info.Size() == 0 {
+		file.Write([]byte("[]"))
+		file.Seek(0, 0)
+	}
+
+	return nil
 }
 
 func (f *FileSystemPlayerStore) GetLeague() domain.League {
@@ -34,8 +69,7 @@ func (f *FileSystemPlayerStore) RecordWin(name string) {
 		f.league = f.league.Add(newPlayer)
 	}
 
-	f.database.Seek(0, 0)
-	json.NewEncoder(f.database).Encode(f.league)
+	f.database.Encode(f.league)
 }
 
 func NewLeague(rdr io.Reader) ([]domain.Player, error) {
@@ -46,13 +80,4 @@ func NewLeague(rdr io.Reader) ([]domain.Player, error) {
 	}
 
 	return league, err
-}
-
-func NewFileSystemPlayerStore(database io.ReadWriteSeeker) domain.PlayerStore {
-	database.Seek(0, 0)
-	league, _ := NewLeague(database)
-	return &FileSystemPlayerStore{
-		database: database,
-		league:   league,
-	}
 }
