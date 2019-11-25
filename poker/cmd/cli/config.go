@@ -18,4 +18,4 @@ var fileSystemPlayerStore, fileSystemPlayerStoreClose = func() (domain.PlayerSto
 	return store, close
 }()
 
-var game = endpoint.NewCLI(fileSystemPlayerStore, os.Stdin)
+var game = endpoint.NewCLI(fileSystemPlayerStore, os.Stdin, endpoint.BlindAlerterFunc(endpoint.StdOutAlerter))
