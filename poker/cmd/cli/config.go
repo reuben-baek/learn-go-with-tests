@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/reuben-baek/learn-go-with-tests/poker/application"
 	"github.com/reuben-baek/learn-go-with-tests/poker/domain"
 	"github.com/reuben-baek/learn-go-with-tests/poker/endpoint"
 	"github.com/reuben-baek/learn-go-with-tests/poker/infrastructure"
@@ -18,4 +19,5 @@ var fileSystemPlayerStore, fileSystemPlayerStoreClose = func() (domain.PlayerSto
 	return store, close
 }()
 
-var game = endpoint.NewCLI(fileSystemPlayerStore, os.Stdin, endpoint.BlindAlerterFunc(endpoint.StdOutAlerter))
+var game = application.NewTexasHoldem(domain.BlindAlerterFunc(domain.StdOutAlerter), fileSystemPlayerStore)
+var cli = endpoint.NewCLI(os.Stdin, os.Stdout, game)

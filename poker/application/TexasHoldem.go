@@ -1,16 +1,20 @@
-package endpoint
+package application
 
 import (
 	"github.com/reuben-baek/learn-go-with-tests/poker/domain"
 	"time"
 )
 
-type Game struct {
-	alerter BlindAlerter
+type TexasHoldem struct {
+	alerter domain.BlindAlerter
 	store   domain.PlayerStore
 }
 
-func (p *Game) Start(numberOfPlayers int) {
+func NewTexasHoldem(alerter domain.BlindAlerter, store domain.PlayerStore) *TexasHoldem {
+	return &TexasHoldem{alerter: alerter, store: store}
+}
+
+func (p *TexasHoldem) Start(numberOfPlayers int) {
 	blindIncrement := time.Duration(5+numberOfPlayers) * time.Minute
 
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
@@ -21,6 +25,6 @@ func (p *Game) Start(numberOfPlayers int) {
 	}
 }
 
-func (p *Game) Finish(winner string) {
+func (p *TexasHoldem) Finish(winner string) {
 	p.store.RecordWin(winner)
 }

@@ -3,6 +3,7 @@ package endpoint
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/reuben-baek/learn-go-with-tests/poker/application"
 	"github.com/reuben-baek/learn-go-with-tests/poker/domain"
 	"github.com/reuben-baek/learn-go-with-tests/poker/infrastructure"
 	"io"
@@ -13,15 +14,15 @@ import (
 )
 
 func TestGETPlayers(t *testing.T) {
-	store := StubPlayerStore{
+	store := application.NewStubPlayerStore(
 		map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
 		},
 		nil,
 		nil,
-	}
-	server := NewPlayerServer(&store)
+	)
+	server := NewPlayerServer(store)
 
 	t.Run("returns Pepper's score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -54,12 +55,12 @@ func TestGETPlayers(t *testing.T) {
 }
 
 func TestStoreWins(t *testing.T) {
-	store := StubPlayerStore{
+	store := application.NewStubPlayerStore(
 		map[string]int{},
 		nil,
 		nil,
-	}
-	server := NewPlayerServer(&store)
+	)
+	server := NewPlayerServer(store)
 
 	t.Run("it records wins on POST", func(t *testing.T) {
 		const player = "Pepper"
@@ -69,12 +70,12 @@ func TestStoreWins(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertStatus(t, response.Code, http.StatusAccepted)
-		if len(store.winCalls) != 1 {
-			t.Errorf("got %d calls to RecordWin want %d", len(store.winCalls), 1)
+		if len(store.WinCalls) != 1 {
+			t.Errorf("got %d calls to RecordWin want %d", len(store.WinCalls), 1)
 		}
 
-		if store.winCalls[0] != player {
-			t.Errorf("did not store correct winner got %q want %q", store.winCalls[0], player)
+		if store.WinCalls[0] != player {
+			t.Errorf("did not store correct winner got %q want %q", store.WinCalls[0], player)
 		}
 	})
 }
@@ -120,8 +121,8 @@ func TestLeague(t *testing.T) {
 			{"Tiest", 14},
 		}
 
-		store := StubPlayerStore{nil, nil, wantedLeague}
-		server := NewPlayerServer(&store)
+		store := application.NewStubPlayerStore(nil, nil, wantedLeague)
+		server := NewPlayerServer(store)
 
 		request := newLeagueRequest()
 		response := httptest.NewRecorder()

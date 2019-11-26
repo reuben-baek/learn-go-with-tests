@@ -1,11 +1,15 @@
-package endpoint
+package application
 
 import "github.com/reuben-baek/learn-go-with-tests/poker/domain"
 
 type StubPlayerStore struct {
 	scores   map[string]int
-	winCalls []string
+	WinCalls []string
 	league   domain.League
+}
+
+func NewStubPlayerStore(scores map[string]int, winCalls []string, league domain.League) *StubPlayerStore {
+	return &StubPlayerStore{scores: scores, WinCalls: winCalls, league: league}
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -14,7 +18,7 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 }
 
 func (s *StubPlayerStore) RecordWin(name string) {
-	s.winCalls = append(s.winCalls, name)
+	s.WinCalls = append(s.WinCalls, name)
 }
 
 func (s *StubPlayerStore) GetLeague() domain.League {
