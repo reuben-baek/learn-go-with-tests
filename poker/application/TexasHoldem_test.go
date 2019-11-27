@@ -2,6 +2,8 @@ package application
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"testing"
 	"time"
 )
@@ -19,7 +21,7 @@ type SpyBlindAlerter struct {
 	alerts []ScheduledAlert
 }
 
-func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int) {
+func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int, to io.Writer) {
 	s.alerts = append(s.alerts, ScheduledAlert{at, amount})
 }
 
@@ -30,7 +32,7 @@ func TestGame_Start(t *testing.T) {
 		blindAlerter := &SpyBlindAlerter{}
 		game := NewTexasHoldem(blindAlerter, dummyPlayerStore)
 
-		game.Start(5)
+		game.Start(5, os.Stdout)
 
 		cases := []ScheduledAlert{
 			{At: 0 * time.Second, Amount: 100},
@@ -53,7 +55,7 @@ func TestGame_Start(t *testing.T) {
 		blindAlerter := &SpyBlindAlerter{}
 		game := NewTexasHoldem(blindAlerter, dummyPlayerStore)
 
-		game.Start(7)
+		game.Start(7, os.Stdout)
 
 		cases := []ScheduledAlert{
 			{At: 0 * time.Second, Amount: 100},

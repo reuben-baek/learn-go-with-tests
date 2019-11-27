@@ -19,5 +19,5 @@ var fileSystemPlayerStore, fileSystemPlayerStoreClose = func() (domain.PlayerSto
 	return store, close
 }()
 
-var game = application.NewTexasHoldem(domain.BlindAlerterFunc(domain.StdOutAlerter), fileSystemPlayerStore)
+var game = application.NewTexasHoldem(domain.BlindAlerterFunc(domain.Alerter), fileSystemPlayerStore)
 var cli = endpoint.NewCLI(os.Stdin, os.Stdout, game)

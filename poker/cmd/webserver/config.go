@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/reuben-baek/learn-go-with-tests/poker/application"
 	"github.com/reuben-baek/learn-go-with-tests/poker/domain"
 	"github.com/reuben-baek/learn-go-with-tests/poker/endpoint"
 	"github.com/reuben-baek/learn-go-with-tests/poker/infrastructure"
@@ -26,4 +27,12 @@ var fileSystemPlayerStore = func() domain.PlayerStore {
 	return store
 }()
 
-var playerServer = endpoint.NewPlayerServer(fileSystemPlayerStore)
+var game = application.NewTexasHoldem(domain.BlindAlerterFunc(domain.Alerter), fileSystemPlayerStore)
+
+var playerServer = func() *endpoint.PlayerServer {
+	server, err := endpoint.NewPlayerServer(fileSystemPlayerStore, game)
+	if err != nil {
+		log.Fatalf("problem creating file system player store, %v", err)
+	}
+	return server
+}()
